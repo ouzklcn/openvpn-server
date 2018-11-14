@@ -4,5 +4,5 @@
 apt-get -y update
 
 # Update Ubuntu
-apt-get -y upgrade
+DEBIAN_FRONTEND=noninteractive apt-get upgrade -q -y -u -o Dpkg::Options::="--force-confdef"
 apt-get -y dist-upgrade

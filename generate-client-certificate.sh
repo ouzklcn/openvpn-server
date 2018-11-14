@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+# Find script directory
+sd=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+# Load variables
+source $sd/variables.sh
 # Change to script directory
-sd=`dirname $0`
 cd $sd
-sd=`pwd`
+
 
 name=$1
 
@@ -12,6 +15,6 @@ if [ "$name" = "" ]; then
   exit;
 fi
 
-cd ~/openvpn-ca
+cd $CA_DIR
 source vars
 $sd/build-key.sh $name

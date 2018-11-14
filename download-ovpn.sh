@@ -6,14 +6,19 @@ sd=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 source $sd/variables.sh
 
 name=$1
-usr=$(env | grep SUDO_USER | cut -d= -f 2)
 
 if [ "$name" = "" ]; then
-  echo "Usage: make-config.sh name"
+  echo "Usage: download-ovpn.sh name"
   exit;
 fi
 
-cat ${BASE_CONFIG} \
+# Check if openvpn file exists for the user
+if [ ! -f ${CONFIG_FILES_DIR}/${name}.ovpn ]; then
+  echo "No vpn configuration found for user with name: " $name
+  exit;
+fi
+
+sudo cat ${BASE_CONFIG} \
     <(echo -e '<ca>') \
     ${KEY_DIR}/ca.crt \
     <(echo -e '</ca>\n<cert>') \
@@ -22,11 +27,4 @@ cat ${BASE_CONFIG} \
     ${KEY_DIR}/${name}.key \
     <(echo -e '</key>\n<tls-auth>') \
     ${KEY_DIR}/ta.key \
-    <(echo -e '</tls-auth>') \
-    > ${CONFIG_FILES_DIR}/${name}.ovpn
-
-cp -u ${CONFIG_FILES_DIR}/${name}.ovpn ${OUTPUT_DIR}/${name}.ovpn 
-chown $usr:$usr ${OUTPUT_DIR}/${name}.ovpn 
-
-
-# sed -i "s/group nogroup/group nobody/" ${OUTPUT_DIR}/${name}.ovpn
+    <(echo -e '</tls-auth>')

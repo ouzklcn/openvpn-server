@@ -1,28 +1,26 @@
 #!/usr/bin/env bash
 
-# Change to script directory
-sd=`dirname $0`
-cd $sd
-# if you ran the script from its own directory you actually just got '.'
-# so capture the abs path to wd now
-sd=`pwd`
+# Find script directory
+sd=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+# Load variables
+source $sd/variables.sh
 
 # Make sure config file exists
-if [ ! -f ./config.sh ]; then
+if [ ! -f $sd/config.sh ]; then
   echo "config.sh not found!"
   exit;
 fi
 
 # Load config
-source ./config.sh
-source ./interfaces.sh
+source $sd/config.sh
+source $sd/interfaces.sh
 
 # Install OpenVPN and expect
 apt-get -y install openvpn easy-rsa expect
 
 # Set up the CA directory
-make-cadir ~/openvpn-ca
-cd ~/openvpn-ca
+make-cadir $CA_DIR
+cd $CA_DIR
 
 # Update vars
 sed -i "s/export KEY_COUNTRY=\"[^\"]*\"/export KEY_COUNTRY=\"${KEY_COUNTRY}\"/" vars
@@ -44,7 +42,7 @@ $sd/build-key-server.sh
 openvpn --genkey --secret keys/ta.key
 
 # Copy the files to the OpenVPN directory
-cd ~/openvpn-ca/keys
+cd $KEY_DIR
 cp ca.crt ca.key server.crt server.key ta.key dh2048.pem /etc/openvpn
 gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz | sudo tee /etc/openvpn/server.conf
 
@@ -75,19 +73,19 @@ systemctl start openvpn@server
 systemctl enable openvpn@server
 
 # Create the client config directory structure
-mkdir -p ~/client-configs/files
+mkdir -p $CONFIG_FILES_DIR
 
 # Create a base configuration
-cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf ~/client-configs/base.conf
-sed -i "s/remote my-server-1 1194/remote ${PUBLIC_IP} 1194/" ~/client-configs/base.conf
-sed -i "s/;user nobody/user nobody/" ~/client-configs/base.conf
-sed -i "s/;group nogroup/group nogroup/" ~/client-configs/base.conf
-sed -i "s/ca ca.crt/#ca ca.crt/" ~/client-configs/base.conf
-sed -i "s/cert client.crt/#cert client.crt/" ~/client-configs/base.conf
-sed -i "s/key client.key/#key client.key/" ~/client-configs/base.conf
-echo "cipher AES-128-CBC" >> ~/client-configs/base.conf
-echo "auth SHA256" >> ~/client-configs/base.conf
-echo "key-direction 1" >> ~/client-configs/base.conf
-echo "#script-security 2" >> ~/client-configs/base.conf
-echo "#up /etc/openvpn/update-resolv-conf" >> ~/client-configs/base.conf
-echo "#down /etc/openvpn/update-resolv-conf" >> ~/client-configs/base.conf
+cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf $BASE_CONFIG
+sed -i "s/remote my-server-1 1194/remote ${PUBLIC_IP} 1194/" $BASE_CONFIG
+sed -i "s/;user nobody/user nobody/" $BASE_CONFIG
+sed -i "s/;group nogroup/group nogroup/" $BASE_CONFIG
+sed -i "s/ca ca.crt/#ca ca.crt/"  $BASE_CONFIG
+sed -i "s/cert client.crt/#cert client.crt/" $BASE_CONFIG
+sed -i "s/key client.key/#key client.key/" $BASE_CONFIG
+echo "cipher AES-128-CBC" >>  $BASE_CONFIG
+echo "auth SHA256" >> $BASE_CONFIG
+echo "key-direction 1" >> $BASE_CONFIG
+echo "#script-security 2" >> $BASE_CONFIG
+echo "#up /etc/openvpn/update-resolv-conf" >> $BASE_CONFIG
+echo "#down /etc/openvpn/update-resolv-conf" >> $BASE_CONFIG
