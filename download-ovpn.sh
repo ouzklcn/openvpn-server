@@ -18,13 +18,5 @@ if [ ! -f ${CONFIG_FILES_DIR}/${name}.ovpn ]; then
   exit;
 fi
 
-sudo cat ${BASE_CONFIG} \
-    <(echo -e '<ca>') \
-    ${KEY_DIR}/ca.crt \
-    <(echo -e '</ca>\n<cert>') \
-    ${KEY_DIR}/${name}.crt \
-    <(echo -e '</cert>\n<key>') \
-    ${KEY_DIR}/${name}.key \
-    <(echo -e '</key>\n<tls-auth>') \
-    ${KEY_DIR}/ta.key \
-    <(echo -e '</tls-auth>')
+sudo cat ${CONFIG_FILES_DIR}/${name}.ovpn
+
