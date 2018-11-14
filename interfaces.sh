@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+if [ $EUID != 0 ]; then
+    sudo "$0" "$@"
+    exit $?
+fi
 
 DEVICES=$(ifconfig -s | grep -v "Iface\|lo\|tun0" | cut -d " " -f 1)
 NUMDEVICES=$(ifconfig -s | wc -l)

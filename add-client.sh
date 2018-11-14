@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+if [ $EUID != 0 ]; then
+    sudo "$0" "$@"
+    exit $?
+fi
 
 # Find script directory
 sd=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
@@ -21,7 +25,8 @@ if [ -f ${CONFIG_FILES_DIR}/${name}.ovpn ]; then
 fi
 
 # Generate a client certificate and key pair
-sudo $sd/generate-client-certificate.sh $name
+$sd/generate-client-certificate.sh $name
 
 # Make config
-sudo $sd/make-config.sh $name
+$sd/make-config.sh $name
+

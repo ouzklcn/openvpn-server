@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+if [ $EUID != 0 ]; then
+    sudo "$0" "$@"
+    exit $?
+fi
 
 # Find script directory
 sd=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)

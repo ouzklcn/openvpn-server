@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+if [ $EUID != 0 ]; then
+    sudo "$0" "$@"
+    exit $?
+fi
 
 # Find script directory
 sd=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
@@ -18,5 +22,5 @@ if [ ! -f ${CONFIG_FILES_DIR}/${name}.ovpn ]; then
   exit;
 fi
 
-sudo cat ${CONFIG_FILES_DIR}/${name}.ovpn
+cat ${CONFIG_FILES_DIR}/${name}.ovpn
 

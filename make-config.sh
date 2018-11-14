@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+if [ $EUID != 0 ]; then
+    sudo "$0" "$@"
+    exit $?
+fi
+
 
 # Find script directory
 sd=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
@@ -24,9 +29,6 @@ cat ${BASE_CONFIG} \
     ${KEY_DIR}/ta.key \
     <(echo -e '</tls-auth>') \
     > ${CONFIG_FILES_DIR}/${name}.ovpn
-
-cp -u ${CONFIG_FILES_DIR}/${name}.ovpn ${OUTPUT_DIR}/${name}.ovpn 
-chown $usr:$usr ${OUTPUT_DIR}/${name}.ovpn 
 
 
 # sed -i "s/group nogroup/group nobody/" ${OUTPUT_DIR}/${name}.ovpn
