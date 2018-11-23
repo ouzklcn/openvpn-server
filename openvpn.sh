@@ -56,6 +56,8 @@ sed -i "s/;tls-auth ta.key 0/tls-auth ta.key 0\nkey-direction 0/" /etc/openvpn/s
 sed -i "s/;cipher AES-128-CBC/cipher AES-128-CBC\nauth SHA256/" /etc/openvpn/server.conf
 sed -i "s/;user nobody/user nobody/" /etc/openvpn/server.conf
 sed -i "s/;group nogroup/group nogroup/" /etc/openvpn/server.conf
+sed -i "s/proto udp/;proto udp/" /etc/openvpn/server.conf
+sed -i "s/;proto tcp/proto tcp/" /etc/openvpn/server.conf
 
 # Allow IP forwarding
 sed -i "s/#net.ipv4.ip_forward/net.ipv4.ip_forward/" /etc/sysctl.conf
@@ -88,6 +90,8 @@ sed -i "s/;group nogroup/group nogroup/" $BASE_CONFIG
 sed -i "s/ca ca.crt/#ca ca.crt/"  $BASE_CONFIG
 sed -i "s/cert client.crt/#cert client.crt/" $BASE_CONFIG
 sed -i "s/key client.key/#key client.key/" $BASE_CONFIG
+sed -i "s/proto udp/;proto udp/" $BASE_CONFIG
+sed -i "s/;proto tcp/proto tcp/" $BASE_CONFIG
 echo "cipher AES-128-CBC" >>  $BASE_CONFIG
 echo "auth SHA256" >> $BASE_CONFIG
 echo "key-direction 1" >> $BASE_CONFIG
